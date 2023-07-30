@@ -1,9 +1,36 @@
-use std::f64::consts::PI;
+use std::{f64::consts::PI, fmt::{Display, self}};
 
 use num_complex::Complex64;
 
 const N: usize = 8;
+/* 
+#[derive(Debug,PartialEq)]
+enum CallType{
+    Start,
+    Even,
+    Odd
+}
 
+impl Display for CallType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CallType::Start => write!(f, "Start"),
+            CallType::Even => write!(f, "Even"),
+            CallType::Odd => write!(f, "Odd"),
+        }
+    }}
+
+#[derive(Debug)]
+struct DebuggerData{
+    signal_idx: usize,
+    out_fft_idx: usize,
+    call_type: CallType
+}
+
+impl DebuggerData {
+    fn new(signal_idx: usize, out_fft_idx: usize, call_type: CallType) -> Self { Self { signal_idx, out_fft_idx, call_type } }
+}
+ */
 // copied from rosetta code go version.
 fn fft(signal: &mut [f64], out_fft: &mut [Complex64], n: usize, offset: usize) {
     if n == 1 {
@@ -18,7 +45,7 @@ fn fft(signal: &mut [f64], out_fft: &mut [Complex64], n: usize, offset: usize) {
         n / 2,
         2 * offset,
     ); // get odd indexes
-
+    println!("-> siglen {}, fftlen {}", signal.len(), out_fft.len());
     let mut k = 0;
     //println!("{:?}", signal);
     while k < (n / 2) {
