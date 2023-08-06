@@ -1,4 +1,5 @@
 use num_complex::Complex64;
+
 use std::f64::consts::PI;
 
 //bit reverse algo from https://www.katjaas.nl/bitreversal/bitreversal.html
@@ -17,7 +18,7 @@ pub fn bit_reverse(n: usize, bit_width: u64) -> usize {
     reverse
 }
 
-pub fn reverse_bit_order(signal: &mut [Complex64; 8], bits: u64) {
+pub fn reverse_bit_order<Type, const Size: usize>(signal: &mut [Type; Size], bits: u64) {
     let n = signal.len();
     for i in 0..(n) {
         let j = bit_reverse(i, bits);
@@ -27,7 +28,7 @@ pub fn reverse_bit_order(signal: &mut [Complex64; 8], bits: u64) {
     }
 }
 
-pub fn fftiter(out_fft: &mut [Complex64; 8]) {
+pub fn fftiter<const Size: usize>(out_fft: &mut [Complex64; Size]) {
     let N = out_fft.len();
     let order = N.ilog2() as u64;
 
