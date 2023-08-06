@@ -1,4 +1,5 @@
-//use num_complex::Complex64;
+use num_complex::Complex64;
+use std::f64::consts::PI;
 
 //bit reverse algo from https://www.katjaas.nl/bitreversal/bitreversal.html
 pub fn bit_reverse(n: usize, bit_width: u64) -> usize {
@@ -13,18 +14,45 @@ pub fn bit_reverse(n: usize, bit_width: u64) -> usize {
     }
     reverse &= mask - 1; // clear all bits more significant than N-1
 
-    return reverse;
+    reverse
 }
 
-pub fn reverse_bit_order(signal: &mut [f64], bits: u64) {
+pub fn reverse_bit_order(signal: &mut [Complex64; 8], bits: u64) {
     let n = signal.len();
     for i in 0..(n) {
         let j = bit_reverse(i, bits);
         if i < j {
-            signal.swap(i + 1, j + 1);
-            //let tmp = signal[i + 1];
-            //signal[i + 1] = signal[j + 1];
-            //signal[j + 1] = tmp;
+            signal.swap(i, j);
+        }
+    }
+}
+
+pub fn fftiter(out_fft: &mut [Complex64; 8]) {
+    let N = out_fft.len();
+    let order = N.ilog2() as u64;
+
+    reverse_bit_order(out_fft, order);
+
+    let mut n1 = 0;
+    let mut n2 = 1;
+
+    // _i is the depth butter flies in the fft, so for 8 inputs we have depth of 3 (2^3)
+    for _i in 0..(order) {
+        n1 = n2;
+        n2 *= 2;
+        let step_angle = -2.0 * PI / (n2 as f64);
+        let mut angle = 0.0;
+
+        for j in 0..n1 {
+            // j will select odd or even
+            let factors = Complex64::new(0.0, angle).exp();
+            angle += step_angle;
+
+            for k in (j..N).step_by(n2) {
+                let tmp = out_fft[k];
+                out_fft[k] += factors * out_fft[k + n1];
+                out_fft[k + n1] = tmp - factors * out_fft[k + n1]; // n/2 mirrored path
+            }
         }
     }
 }

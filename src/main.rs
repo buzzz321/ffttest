@@ -1,8 +1,5 @@
-use ffttest::{bit_reverse, reverse_bit_order};
-use std::{
-    f64::consts::PI,
-    fmt::{self},
-};
+use ffttest::fftiter;
+use std::f64::consts::PI;
 
 use num_complex::Complex64;
 const N: usize = 8;
@@ -21,7 +18,7 @@ fn fft(signal: &mut [f64], out_fft: &mut [Complex64], n: usize, offset: usize) {
         n / 2,
         2 * offset,
     ); // get odd indexes
-    println!("-> siglen {}, fftlen {}", signal.len(), out_fft.len());
+       //println!("-> siglen {}, fftlen {}", signal.len(), out_fft.len());
     let mut k = 0;
     //println!("{:?}", signal);
     while k < (n / 2) {
@@ -44,11 +41,14 @@ fn main() {
         println!("The FFT is {:?}", val);
     }
 
-    println!("{:?}", signal);
-    println!("{:?}", reverse_bit_order(&mut signal, 3));
+    for (idx, item) in signal.iter().enumerate() {
+        out_fft[idx] = Complex64::new(*item, 0.0);
+    }
 
-    for val in 0..8 {
-        let rev = bit_reverse(val as usize, 3);
-        println!(" n = {} ({:03b}) reverse = {} ({:03b})", val, val, rev, rev);
+    println!("{:?}", signal);
+
+    fftiter(&mut out_fft);
+    for val in out_fft {
+        println!("The FFT is {:?}", val);
     }
 }
