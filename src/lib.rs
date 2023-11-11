@@ -18,7 +18,7 @@ pub fn bit_reverse(n: usize, bit_width: u64) -> usize {
     reverse
 }
 
-pub fn reverse_bit_order<Type, const Size: usize>(signal: &mut [Type; Size], bits: u64) {
+pub fn reverse_bit_order<Type, const SIZE: usize>(signal: &mut [Type; SIZE], bits: u64) {
     let n = signal.len();
     for i in 0..(n) {
         let j = bit_reverse(i, bits);
@@ -28,13 +28,14 @@ pub fn reverse_bit_order<Type, const Size: usize>(signal: &mut [Type; Size], bit
     }
 }
 
-pub fn fftiter<const Size: usize>(out_fft: &mut [Complex64; Size]) {
+pub fn fftiter<const SIZE: usize>(out_fft: &mut [Complex64; SIZE]) {
+    #[allow(non_snake_case)]
     let N = out_fft.len();
     let order = N.ilog2() as u64;
 
     reverse_bit_order(out_fft, order);
 
-    let mut n1 = 0;
+    let mut n1:usize;
     let mut n2 = 1;
 
     // _i is the depth butter flies in the fft, so for 8 inputs we have depth of 3 (2^3)
@@ -55,5 +56,16 @@ pub fn fftiter<const Size: usize>(out_fft: &mut [Complex64; Size]) {
                 out_fft[k + n1] = tmp - factors * out_fft[k + n1]; // n/2 mirrored path
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bit_reverse;
+
+    #[test]
+    fn it_works() {
+        let result = bit_reverse(4, 3);
+        assert_eq!(result, 1);
     }
 }
