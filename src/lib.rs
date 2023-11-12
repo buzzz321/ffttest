@@ -35,7 +35,7 @@ pub fn fftiter<const SIZE: usize>(out_fft: &mut [Complex64; SIZE]) {
 
     reverse_bit_order(out_fft, order);
 
-    let mut n1:usize;
+    let mut n1: usize;
     let mut n2 = 1;
 
     // _i is the depth butter flies in the fft, so for 8 inputs we have depth of 3 (2^3)
@@ -62,10 +62,22 @@ pub fn fftiter<const SIZE: usize>(out_fft: &mut [Complex64; SIZE]) {
 #[cfg(test)]
 mod tests {
     use crate::bit_reverse;
+    use crate::reverse_bit_order;
 
     #[test]
-    fn it_works() {
+    fn bit_reverse_works() {
         let result = bit_reverse(4, 3);
         assert_eq!(result, 1);
+    }
+
+    #[test]
+    fn reverse_bit_order_test() {
+        let mut uat: [i32; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+        let length = uat.len();
+        let order = length.ilog2() as u64;
+
+        reverse_bit_order(&mut uat, order);
+
+        assert_eq!(uat, [1, 5, 3, 7, 2, 6, 4, 8]);
     }
 }
