@@ -62,7 +62,9 @@ pub fn fftiter<const SIZE: usize>(out_fft: &mut [Complex64; SIZE]) {
 #[cfg(test)]
 mod tests {
     use crate::bit_reverse;
+    use crate::fftiter;
     use crate::reverse_bit_order;
+    use num_complex::Complex;
 
     #[test]
     fn bit_reverse_works() {
@@ -79,5 +81,50 @@ mod tests {
         reverse_bit_order(&mut uat, order);
 
         assert_eq!(uat, [1, 5, 3, 7, 2, 6, 4, 8]);
+    }
+
+    #[test]
+    fn fftiter_test() {
+        const N: usize = 8;
+
+        let mut signal: [Complex<f64>; N] = [
+            num_complex::Complex::new(1.0, 0.0),
+            num_complex::Complex::new(2.0, 0.0),
+            num_complex::Complex::new(3.0, 0.0),
+            num_complex::Complex::new(4.0, 0.0),
+            num_complex::Complex::new(5.0, 0.0),
+            num_complex::Complex::new(6.0, 0.0),
+            num_complex::Complex::new(7.0, 0.0),
+            num_complex::Complex::new(8.0, 0.0),
+        ];
+
+        fftiter(&mut signal);
+        let ans = [
+            Complex { re: 36.0, im: 0.0 },
+            Complex {
+                re: -4.0,
+                im: 9.65685424949238,
+            },
+            Complex { re: -4.0, im: 4.0 },
+            Complex {
+                re: -4.0,
+                im: 1.6568542494923797,
+            },
+            Complex { re: -4.0, im: 0.0 },
+            Complex {
+                re: -3.9999999999999996,
+                im: -1.6568542494923797,
+            },
+            Complex {
+                re: -3.9999999999999996,
+                im: -4.0,
+            },
+            Complex {
+                re: -3.9999999999999987,
+                im: -9.65685424949238,
+            },
+        ];
+        assert_eq!(signal, ans);
+        println!("{:?}", signal);
     }
 }
